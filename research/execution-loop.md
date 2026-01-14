@@ -30,12 +30,12 @@ Progress persists in the filesystem and git history, not the LLM's context windo
 
 **External (kamaji pattern):** Orchestrator spawns fresh Claude Code sessions per task. Each session starts clean. No accumulated confusion, but no iterative memory either.
 
-| Aspect | Internal | External |
-|--------|----------|----------|
-| Context per task | Accumulates | Fresh |
-| State management | Claude tracks via files | Orchestrator owns state |
-| Verification | Claude self-reports | Orchestrator verifies independently |
-| Failure recovery | Log and continue | Reset and retry |
+| Aspect           | Internal                | External                            |
+| ---------------- | ----------------------- | ----------------------------------- |
+| Context per task | Accumulates             | Fresh                               |
+| State management | Claude tracks via files | Orchestrator owns state             |
+| Verification     | Claude self-reports     | Orchestrator verifies independently |
+| Failure recovery | Log and continue        | Reset and retry                     |
 
 Kamaji uses external orchestration—it owns the state machine, spawns fresh contexts, and can verify completion independently.
 
@@ -44,12 +44,14 @@ Kamaji uses external orchestration—it owns the state machine, spawns fresh con
 Tasks must have machine-verifiable completion conditions. The loop needs to know when to stop.
 
 **Good criteria:**
+
 - All tests pass
 - Build succeeds with zero errors
 - Coverage exceeds 85%
 - Linter reports zero warnings
 
 **Bad criteria:**
+
 - "Make it better"
 - "Improve code quality"
 - "Refactor appropriately"
@@ -79,6 +81,7 @@ When stuck, exit with failure and leave state intact for manual intervention.
 Each task spawns in a fresh context. This keeps Claude in its "smart zone"—early context with no accumulated confusion from previous work or failed attempts.
 
 Benefits:
+
 - No context pollution from past failures
 - Predictable token budget per task
 - Independent tasks can run in parallel
@@ -130,13 +133,13 @@ Tasks with clear, automatable verification:
 
 ## Kamaji implications
 
-| Aspect | Application |
-|--------|-------------|
-| External orchestration | Kamaji owns state, spawns fresh Claude sessions |
-| Binary verification | `verify` + `done` fields enable machine checking |
-| Atomic commits | Orchestrator commits on pass, resets on fail |
-| Stuck detection | Exit after N consecutive failures |
-| Parallel execution | Independent tickets can run simultaneously |
+| Aspect                 | Application                                      |
+| ---------------------- | ------------------------------------------------ |
+| External orchestration | Kamaji owns state, spawns fresh Claude sessions  |
+| Binary verification    | `verify` + `done` fields enable machine checking |
+| Atomic commits         | Orchestrator commits on pass, resets on fail     |
+| Stuck detection        | Exit after N consecutive failures                |
+| Parallel execution     | Independent tickets can run simultaneously       |
 
 ---
 
