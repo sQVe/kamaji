@@ -123,4 +123,4 @@ deps-tools:
 	@go install gotest.tools/gotestsum@v1.12.0
 	@echo "  Installing changie..."
 	@go install github.com/miniscruff/changie@v1.24.0
-	@echo "✓ All tools installed"
+	@echo "All tools installed"
