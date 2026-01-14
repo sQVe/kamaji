@@ -174,7 +174,7 @@ jobs:
 
             # Check for actual code changes
             case "$file" in
-              cmd/*.go|internal/*.go|go.mod|go.sum|Makefile)
+              cmd/**/*.go|internal/**/*.go|go.mod|go.sum|Makefile)
                 CODE_CHANGED="true"
                 echo "Code change: $file"
                 ;;

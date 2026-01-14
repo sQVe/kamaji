@@ -18,6 +18,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN }}
 
-      - uses: labd/changie-release-action@v0.6.0
+      - uses: labd/changie-release-action@ac4d65e736733f1d2c363dd5d99b43a1add5aaef # v0.6.0
         with:
           github-token: ${{ secrets.RELEASE_TOKEN }}
