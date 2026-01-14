@@ -2,10 +2,9 @@ package statemachine
 
 import "github.com/sqve/kamaji/internal/domain"
 
-// StuckThreshold is the number of consecutive failures before a task is considered stuck.
+// StuckThreshold allows transient failures while preventing infinite retry loops.
 const StuckThreshold = 3
 
-// TaskInfo contains the current task with its context.
 type TaskInfo struct {
 	TicketIndex int
 	TaskIndex   int
@@ -13,7 +12,7 @@ type TaskInfo struct {
 	Task        *domain.Task
 }
 
-// NextTask returns the current task info, or nil if all tasks are complete.
+// NextTask returns nil when the sprint is complete.
 func NextTask(state *domain.State, sprint *domain.Sprint) *TaskInfo {
 	if state.CurrentTicket >= len(sprint.Tickets) {
 		return nil
@@ -32,7 +31,7 @@ func NextTask(state *domain.State, sprint *domain.Sprint) *TaskInfo {
 	}
 }
 
-// Advance moves to the next task, handling ticket boundaries.
+// Advance is a no-op when state is past the sprint end.
 func Advance(state *domain.State, sprint *domain.Sprint) {
 	if state.CurrentTicket >= len(sprint.Tickets) {
 		return
@@ -47,18 +46,17 @@ func Advance(state *domain.State, sprint *domain.Sprint) {
 	}
 }
 
-// RecordPass resets failure count and advances to the next task.
+// RecordPass resets failure count because failures are tracked per-task.
 func RecordPass(state *domain.State, sprint *domain.Sprint) {
 	state.FailureCount = 0
 	Advance(state, sprint)
 }
 
-// RecordFail increments failure count without advancing.
+// RecordFail stays on the task to allow retries before giving up.
 func RecordFail(state *domain.State) {
 	state.FailureCount++
 }
 
-// IsStuck returns true when failure count reaches the stuck threshold.
 func IsStuck(state *domain.State) bool {
 	return state.FailureCount >= StuckThreshold
 }

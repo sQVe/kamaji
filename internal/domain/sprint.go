@@ -1,6 +1,6 @@
 package domain
 
-// Sprint defines a coding sprint configuration (kamaji.yaml).
+// Sprint is loaded from kamaji.yaml.
 type Sprint struct {
 	Name       string   `yaml:"name"`
 	BaseBranch string   `yaml:"base_branch"`
@@ -8,7 +8,6 @@ type Sprint struct {
 	Tickets    []Ticket `yaml:"tickets"`
 }
 
-// Ticket defines a unit of work with a branch and tasks.
 type Ticket struct {
 	Name        string `yaml:"name"`
 	Branch      string `yaml:"branch"`
@@ -16,7 +15,6 @@ type Ticket struct {
 	Tasks       []Task `yaml:"tasks"`
 }
 
-// Task defines a single task within a ticket.
 type Task struct {
 	Description string   `yaml:"description"`
 	Steps       []string `yaml:"steps"`
