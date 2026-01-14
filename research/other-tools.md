@@ -14,10 +14,10 @@ Repository → tree-sitter parse → function signatures + relationships → com
 
 **Architect/editor split:** Two-model pattern where the architect proposes and the editor implements.
 
-| Role | Purpose |
-|------|---------|
-| Architect | Describes how to solve the problem |
-| Editor | Translates description into file edits |
+| Role      | Purpose                                |
+| --------- | -------------------------------------- |
+| Architect | Describes how to solve the problem     |
+| Editor    | Translates description into file edits |
 
 **Incremental file inclusion:** Users add only files that need changes. The repo map pulls context from related files automatically.
 
@@ -55,9 +55,9 @@ Princeton/Stanford research agent for autonomous GitHub issue fixing.
 ```yaml
 model: claude-sonnet-4
 tools:
-  - file_read
-  - file_edit
-  - terminal
+    - file_read
+    - file_edit
+    - terminal
 max_iterations: 30
 ```
 
@@ -82,23 +82,25 @@ Official lifecycle hooks for controlling Claude Code behavior.
 
 **Hook events:**
 
-| Event | Timing | Use case |
-|-------|--------|----------|
-| `PreToolUse` | Before tool calls | Block or modify tool inputs |
-| `PostToolUse` | After tool completes | React to tool output |
-| `Stop` | Claude finishes responding | End-of-turn validation |
-| `SubagentStop` | Subagent finishes | Subagent validation |
+| Event          | Timing                     | Use case                    |
+| -------------- | -------------------------- | --------------------------- |
+| `PreToolUse`   | Before tool calls          | Block or modify tool inputs |
+| `PostToolUse`  | After tool completes       | React to tool output        |
+| `Stop`         | Claude finishes responding | End-of-turn validation      |
+| `SubagentStop` | Subagent finishes          | Subagent validation         |
 
 **Matchers:** Filter which tools trigger hooks.
 
 ```json
 {
-  "hooks": {
-    "PostToolUse": [{
-      "matcher": "Edit|MultiEdit|Write",
-      "command": "./validate-edits.sh"
-    }]
-  }
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Edit|MultiEdit|Write",
+                "command": "./validate-edits.sh"
+            }
+        ]
+    }
 }
 ```
 
@@ -110,23 +112,23 @@ Official lifecycle hooks for controlling Claude Code behavior.
 
 ## Kamaji implications
 
-| Tool | Pattern | Application |
-|------|---------|-------------|
-| Aider | Repo map | Compress context for large codebases |
-| Aider | Architect/editor | Consider two-phase reasoning |
-| OpenHands | Event-sourced state | Enable debugging and replay of actions |
-| OpenHands | Sandboxing | Isolated execution environments |
-| SWE-agent | Single config | Keep configuration simple |
-| Cline | Plan + Act | Explicit planning phase before execution |
-| Hooks | Lifecycle interception | Verify changes independently of Claude |
+| Tool      | Pattern                | Application                              |
+| --------- | ---------------------- | ---------------------------------------- |
+| Aider     | Repo map               | Compress context for large codebases     |
+| Aider     | Architect/editor       | Consider two-phase reasoning             |
+| OpenHands | Event-sourced state    | Enable debugging and replay of actions   |
+| OpenHands | Sandboxing             | Isolated execution environments          |
+| SWE-agent | Single config          | Keep configuration simple                |
+| Cline     | Plan + Act             | Explicit planning phase before execution |
+| Hooks     | Lifecycle interception | Verify changes independently of Claude   |
 
 **High-priority patterns:**
 
-| Pattern | Reason |
-|---------|--------|
-| Repo maps | Compress context for large codebases |
-| Event-sourced state | Enable debugging and replay |
-| Plan + Act | Consider explicit planning before task execution |
+| Pattern              | Reason                                               |
+| -------------------- | ---------------------------------------------------- |
+| Repo maps            | Compress context for large codebases                 |
+| Event-sourced state  | Enable debugging and replay                          |
+| Plan + Act           | Consider explicit planning before task execution     |
 | Hooks for validation | Verify changes independently of Claude's self-report |
 
 ---

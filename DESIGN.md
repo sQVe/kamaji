@@ -51,9 +51,9 @@ project/
 ## Schema (state.yaml)
 
 ```yaml
-current_ticket: 0          # Index into tickets array
-current_task: 0            # Index into current ticket's tasks array
-failure_count: 0           # Consecutive failures on current task (resets on pass)
+current_ticket: 0 # Index into tickets array
+current_task: 0 # Index into current ticket's tasks array
+failure_count: 0 # Consecutive failures on current task (resets on pass)
 ```
 
 ## Schema (ticket log)
@@ -63,16 +63,16 @@ Stored in `.kamaji/logs/<ticket-name>.yaml`:
 ```yaml
 ticket: login-form
 completed:
-  - task: "Create LoginForm component"
-    summary: "Created LoginForm.tsx with Zod validation, loading state"
-  - task: "Add unit tests"
-    summary: "Added 5 tests covering validation and submit flow"
+    - task: "Create LoginForm component"
+      summary: "Created LoginForm.tsx with Zod validation, loading state"
+    - task: "Add unit tests"
+      summary: "Added 5 tests covering validation and submit flow"
 failed_attempts:
-  - task: "Add OAuth integration"
-    summary: "Tried passport.js but conflicts with existing session middleware"
+    - task: "Add OAuth integration"
+      summary: "Tried passport.js but conflicts with existing session middleware"
 insights:
-  - "Codebase uses Zustand for state management"
-  - "Validation schemas are in src/schemas/"
+    - "Codebase uses Zustand for state management"
+    - "Validation schemas are in src/schemas/"
 ```
 
 ## Schema (kamaji.yaml)
@@ -82,22 +82,22 @@ name: "Sprint name"
 base_branch: main
 
 rules:
-  - "Use TypeScript strict mode"
-  - "Follow existing patterns"
+    - "Use TypeScript strict mode"
+    - "Follow existing patterns"
 
 tickets:
-  - name: login-form
-    branch: feat/login-form
-    description: "Create login form with validation"
-    tasks:
-      - description: "Create LoginForm component"
-        steps:
-          - "Add form validation using Zod"
-          - "Handle submit with loading state"
-        verify: "Component renders, validation works"
+    - name: login-form
+      branch: feat/login-form
+      description: "Create login form with validation"
+      tasks:
+          - description: "Create LoginForm component"
+            steps:
+                - "Add form validation using Zod"
+                - "Handle submit with loading state"
+            verify: "Component renders, validation works"
 
-      - description: "Add unit tests"
-        verify: "All tests pass"
+          - description: "Add unit tests"
+            verify: "All tests pass"
 ```
 
 ## MCP server
@@ -112,11 +112,11 @@ Claude Code is spawned with `--mcp-config` pointing to a temp file:
 
 ```json
 {
-  "mcpServers": {
-    "kamaji": {
-      "url": "http://localhost:9999/mcp"
+    "mcpServers": {
+        "kamaji": {
+            "url": "http://localhost:9999/mcp"
+        }
     }
-  }
 }
 ```
 
