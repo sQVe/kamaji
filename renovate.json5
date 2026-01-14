@@ -1,0 +1,63 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended"],
+  schedule: ["before 9am on monday"],
+  timezone: "Europe/Stockholm",
+  prConcurrentLimit: 5,
+  prHourlyLimit: 2,
+  branchPrefix: "deps/",
+  commitMessagePrefix: "deps:",
+  automergeType: "pr",
+  platformAutomerge: true,
+  minimumReleaseAge: "3 days",
+  ignoreUnstable: true,
+  dependencyDashboard: true,
+  labels: ["dependencies"],
+  vulnerabilityAlerts: {
+    enabled: true,
+    labels: ["security"],
+    schedule: ["at any time"],
+    minimumReleaseAge: "0 days",
+    automerge: true,
+  },
+  packageRules: [
+    {
+      matchManagers: ["gomod"],
+      postUpgradeTasks: {
+        commands: ["go mod tidy"],
+        fileFilters: ["go.mod", "go.sum"],
+        executionMode: "branch",
+      },
+    },
+    {
+      matchManagers: ["github-actions"],
+      groupName: "github-actions",
+      pinDigests: true,
+      automerge: true,
+      matchUpdateTypes: ["patch", "minor"],
+    },
+    {
+      matchManagers: ["gomod"],
+      matchUpdateTypes: ["patch"],
+      groupName: "go-patches",
+      automerge: true,
+    },
+    {
+      matchManagers: ["gomod"],
+      matchUpdateTypes: ["minor"],
+      groupName: "go-minor",
+      automerge: false,
+    },
+    {
+      matchManagers: ["gomod"],
+      matchDepTypes: ["golang"],
+      automerge: false,
+      groupName: null,
+    },
+    {
+      groupName: "golangci-lint",
+      matchPackageNames: ["/golangci.*lint/"],
+      automerge: false,
+    },
+  ],
+}
