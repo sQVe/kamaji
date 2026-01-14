@@ -1,7 +1,7 @@
 # Go build cache
 .cache/
 .gocache/
-go.work
+go.work.sum
 go.work.sum
 
 # Go workspace file
