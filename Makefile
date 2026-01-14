@@ -44,7 +44,7 @@ test-coverage:
 build: build-dev
 
 build-dev:
-	@echo "Building Kamaji..."
+	@echo "Building kamaji..."
 	@mkdir -p bin
 	@go build -o bin/kamaji ./cmd/kamaji
 
