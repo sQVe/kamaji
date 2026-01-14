@@ -37,7 +37,7 @@ External orchestrator that:
 └─────────────────────────────────────────┘
 ```
 
-## File Structure
+## File structure
 
 ```
 project/
@@ -100,7 +100,7 @@ tickets:
         verify: "All tests pass"
 ```
 
-## MCP Server
+## MCP server
 
 Kamaji runs an SSE-based MCP server that Claude Code connects to.
 
@@ -120,7 +120,7 @@ Claude Code is spawned with `--mcp-config` pointing to a temp file:
 }
 ```
 
-## MCP Tools
+## MCP tools
 
 **task_complete(status, summary)**
 
@@ -140,7 +140,7 @@ kamaji start           # Run sprint until done or stuck
 kamaji start --dry-run # Show what would run
 ```
 
-## Execution Flow
+## Execution flow
 
 ```
 1. Read kamaji.yaml
@@ -162,7 +162,7 @@ kamaji start --dry-run # Show what would run
     When stuck (3+ failures) → exit failure
 ```
 
-## Context Injection (XML)
+## Context injection (XML)
 
 ```xml
 <task>
@@ -209,7 +209,7 @@ Use note_insight() to record discoveries useful for future tasks.
 </instructions>
 ```
 
-## Git Handling
+## Git handling
 
 - **On pass**: Orchestrator commits with task summary as message
 - **On fail**: `git reset --hard HEAD` (clean slate for retry)
@@ -217,14 +217,14 @@ Use note_insight() to record discoveries useful for future tasks.
 
 Claude focuses on coding. Orchestrator handles git.
 
-## Failure Handling
+## Failure handling
 
 - **Failure count**: Consecutive failures on the current task (resets to 0 on pass)
 - **Stuck threshold**: 3 consecutive failures on the same task
 - **On stuck**: Exit with failure, leave state intact for manual intervention
 - **Exit without signal**: Treated as a failure (Claude crashed or forgot to call task_complete)
 
-## V1 Scope (Minimal)
+## V1 scope (minimal)
 
 **Included:**
 
@@ -244,9 +244,9 @@ Claude focuses on coding. Orchestrator handles git.
 
 ---
 
-## Implementation Details
+## Implementation details
 
-### Package Architecture
+### Package architecture
 
 Two-package strategy separates concerns:
 
@@ -255,12 +255,12 @@ Two-package strategy separates concerns:
 
 Domain owns structures. Config owns serialization.
 
-### Thread Safety
+### Thread safety
 
 - Config state: `sync.RWMutex` for thread-safe access to global config
 - Logger: `atomic.Bool` for debug flag
 
-### State Machine
+### State machine
 
 Pure functions with in-place mutation. Caller owns persistence.
 
@@ -274,13 +274,13 @@ IsStuck(state) bool                // Returns failure_count >= 3
 
 `TaskInfo` contains both domain objects and indices for orchestration context.
 
-### Error Handling
+### Error handling
 
 - **Missing state files**: Return zero-value, not error (graceful fresh start)
 - **Config errors**: Include context (indices, file paths) in messages
 - **Filename sanitization**: `/` in ticket names becomes `-` in log paths
 
-### Plain Mode
+### Plain mode
 
 Logger and styles respect `config.IsPlain()` flag. ASCII-only output when enabled:
 
