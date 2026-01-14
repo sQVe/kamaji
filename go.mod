@@ -1,6 +1,6 @@
 module github.com/sqve/kamaji
 
-go 1.25.5
+go 1.24
 
 require (
 	github.com/charmbracelet/lipgloss v1.1.0
