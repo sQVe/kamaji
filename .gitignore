@@ -7,5 +7,6 @@ go.work.sum
 go.work
 
 # Build output
-bin/
 /kamaji
+bin/
+coverage/
