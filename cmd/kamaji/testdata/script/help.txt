@@ -1,0 +1,5 @@
+# kamaji help
+exec kamaji --help
+stdout 'Kamaji'
+stdout 'orchestrates autonomous coding sprints'
+! stderr .

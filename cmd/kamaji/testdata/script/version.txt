@@ -1,0 +1,4 @@
+# kamaji version
+exec kamaji --version
+stdout 'dev'
+! stderr .
