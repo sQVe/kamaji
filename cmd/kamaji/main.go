@@ -2,10 +2,26 @@ package main
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
 
 	"github.com/sqve/kamaji/internal/version"
 )
 
 func main() {
-	fmt.Println("kamaji", version.Full())
+	if err := rootCmd().Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func rootCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "kamaji",
+		Short:   "Kamaji orchestrates autonomous coding sprints",
+		Version: version.Full(),
+	}
+
+	return cmd
 }
