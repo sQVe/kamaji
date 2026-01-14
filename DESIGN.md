@@ -241,3 +241,51 @@ Claude focuses on coding. Orchestrator handles git.
 - Worktree support
 - Service management
 - `kamaji status/stop/retry` commands
+
+---
+
+## Implementation Details
+
+### Package Architecture
+
+Two-package strategy separates concerns:
+
+- `internal/domain/` — Pure data types (Sprint, Ticket, Task, State, TicketLog, CompletedTask, FailedAttempt)
+- `internal/config/` — File I/O and persistence (LoadSprint, LoadState, SaveState, LoadTicketLog, SaveTicketLog)
+
+Domain owns structures. Config owns serialization.
+
+### Thread Safety
+
+- Config state: `sync.RWMutex` for thread-safe access to global config
+- Logger: `atomic.Bool` for debug flag
+
+### State Machine
+
+Pure functions with in-place mutation. Caller owns persistence.
+
+```go
+NextTask(sprint, state) *TaskInfo  // Returns nil at end, skips empty tickets
+Advance(state, sprint)             // Increments task, handles ticket boundaries
+RecordPass(state, sprint)          // Resets failure_count, calls Advance
+RecordFail(state)                  // Increments failure_count
+IsStuck(state) bool                // Returns failure_count >= 3
+```
+
+`TaskInfo` contains both domain objects and indices for orchestration context.
+
+### Error Handling
+
+- **Missing state files**: Return zero-value, not error (graceful fresh start)
+- **Config errors**: Include context (indices, file paths) in messages
+- **Filename sanitization**: `/` in ticket names becomes `-` in log paths
+
+### Plain Mode
+
+Logger and styles respect `config.IsPlain()` flag. ASCII-only output when enabled:
+
+- `[ok]` — Success
+- `Error:` — Error
+- `->` — Info
+- `Warning:` — Warning
+- `[DEBUG]` — Debug

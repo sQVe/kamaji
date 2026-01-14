@@ -1,0 +1,49 @@
+version: 2
+
+project_name: kamaji
+
+builds:
+  - main: ./cmd/kamaji
+    binary: kamaji
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/sqve/kamaji/internal/version.Version={{.Version}}
+      - -X github.com/sqve/kamaji/internal/version.Commit={{.ShortCommit}}
+      - -X github.com/sqve/kamaji/internal/version.Date={{.Date}}
+
+archives:
+  - formats:
+      - tar.gz
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+
+checksum:
+  name_template: checksums.txt
+
+# Changelog is provided by changie via --release-notes flag
+changelog:
+  disable: true
+
+nfpms:
+  - package_name: kamaji
+    file_name_template: '{{ .ConventionalFileName }}'
+    homepage: https://github.com/sQVe/kamaji
+    maintainer: sQVe <oskargrunning@gmail.com>
+    description: Orchestrate autonomous coding sprints with fresh context per task
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+
+release:
+  github:
+    owner: sQVe
+    name: kamaji

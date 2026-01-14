@@ -1,0 +1,227 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled, ready_for_review]
+
+permissions:
+  contents: read
+
+env:
+  GO_VERSION: '1.25.5'
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft != true
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - '**.go'
+              - 'go.mod'
+              - 'go.sum'
+              - '.golangci.yml'
+              - '.github/workflows/ci.yml'
+              - 'Makefile'
+
+  lint:
+    needs: changes
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - name: Check for Go source files
+        id: check
+        run: |
+          if find . -name '*.go' -not -name '*_test.go' -not -path './vendor/*' | grep -q .; then
+            echo "has_go_files=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No Go source files found, skipping lint"
+            echo "has_go_files=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6
+        if: steps.check.outputs.has_go_files == 'true'
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9
+        if: steps.check.outputs.has_go_files == 'true'
+        with:
+          version: v2.7.2
+
+  test-unit:
+    needs: changes
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - name: Check for Go source files
+        id: check
+        run: |
+          if find . -name '*.go' -not -path './vendor/*' | grep -q .; then
+            echo "has_go_files=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No Go source files found, skipping tests"
+            echo "has_go_files=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6
+        if: steps.check.outputs.has_go_files == 'true'
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: |
+          git config --global user.email "ci@kamaji.dev"
+          git config --global user.name "Kamaji CI"
+          git config --global init.defaultBranch main
+          git config --global commit.gpgsign false
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: go install gotest.tools/gotestsum@v1.12.0
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: make test-coverage
+        env:
+          CI: 'true'
+
+  test-integration:
+    needs: changes
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - name: Check for Go source files
+        id: check
+        run: |
+          if find . -name '*.go' -not -path './vendor/*' | grep -q .; then
+            echo "has_go_files=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No Go source files found, skipping tests"
+            echo "has_go_files=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6
+        if: steps.check.outputs.has_go_files == 'true'
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: go install gotest.tools/gotestsum@v1.12.0
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: |
+          git config --global user.email "ci@kamaji.dev"
+          git config --global user.name "Kamaji CI"
+          git config --global init.defaultBranch main
+          git config --global commit.gpgsign false
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: make test-integration
+
+  require-changeset:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft != true
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          fetch-depth: 0
+
+      - name: Check for changeset requirement
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Fetch current labels via API (event payload labels are stale on re-runs)
+          PR_LABELS=$(gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name')
+
+          # Skip for dependency updates (Dependabot/Renovate)
+          if echo "$PR_LABELS" | grep -q '^dependencies$'; then
+            echo "Skipping changeset check for dependency update"
+            exit 0
+          fi
+
+          # Skip when explicitly labeled (internal refactors, etc.)
+          if echo "$PR_LABELS" | grep -q '^skip-changelog$'; then
+            echo "Skipping changeset check (skip-changelog label)"
+            exit 0
+          fi
+
+          # Get changed files
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+
+          # Check if any code files changed (excluding tests)
+          CODE_CHANGED="false"
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+
+            # Skip non-code files
+            case "$file" in
+              *.md|docs/*|.github/*|.changes/*) continue ;;
+              *_test.go) continue ;;
+            esac
+
+            # Check for actual code changes (use prefix matching since case doesn't support **)
+            case "$file" in
+              cmd/*.go|cmd/*/*.go|cmd/*/*/*.go|internal/*.go|internal/*/*.go|internal/*/*/*.go|go.mod|go.sum|Makefile)
+                CODE_CHANGED="true"
+                echo "Code change: $file"
+                ;;
+            esac
+          done <<< "$CHANGED"
+
+          if [ "$CODE_CHANGED" = "false" ]; then
+            echo "No code changes requiring a changeset"
+            exit 0
+          fi
+
+          # Check for changeset file
+          CHANGESET=$(git diff --name-only --diff-filter=A "$BASE_SHA" "$HEAD_SHA" | grep '^\.changes/unreleased/.*\.yaml$' || true)
+
+          if [ -z "$CHANGESET" ]; then
+            echo "::error::This PR changes code but is missing a changeset."
+            echo ""
+            echo "Add a changeset by running:"
+            echo "  make change"
+            exit 1
+          fi
+
+          echo "Found changeset: $CHANGESET"
+
+  build:
+    needs: [changes, lint, test-unit]
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - name: Check for Go source files
+        id: check
+        run: |
+          if find . -name '*.go' -not -name '*_test.go' -not -path './vendor/*' | grep -q .; then
+            echo "has_go_files=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No Go source files found, skipping build"
+            echo "has_go_files=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6
+        if: steps.check.outputs.has_go_files == 'true'
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: make build-dev
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: ./bin/kamaji --version
