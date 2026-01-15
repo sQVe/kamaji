@@ -74,6 +74,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Check for Go source files
         id: check
+        shell: bash
         run: |
           if find . -name '*.go' -not -path './vendor/*' | grep -q .; then
             echo "has_go_files=true" >> "$GITHUB_OUTPUT"
@@ -87,6 +88,7 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
       - if: steps.check.outputs.has_go_files == 'true'
+        shell: bash
         run: |
           git config --global user.email "ci@kamaji.dev"
           git config --global user.name "Kamaji CI"
@@ -113,6 +115,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Check for Go source files
         id: check
+        shell: bash
         run: |
           if find . -name '*.go' -not -path './vendor/*' | grep -q .; then
             echo "has_go_files=true" >> "$GITHUB_OUTPUT"
@@ -128,6 +131,7 @@ jobs:
       - if: steps.check.outputs.has_go_files == 'true'
         run: go install gotest.tools/gotestsum@v1.13.0
       - if: steps.check.outputs.has_go_files == 'true'
+        shell: bash
         run: |
           git config --global user.email "ci@kamaji.dev"
           git config --global user.name "Kamaji CI"
