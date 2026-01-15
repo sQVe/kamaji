@@ -2,6 +2,7 @@ package process
 
 import (
 	"bytes"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -118,6 +119,9 @@ func TestProcess_WithStderr(t *testing.T) {
 }
 
 func TestProcess_WithDir(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("pwd returns Unix-style paths on Windows via Git Bash")
+	}
 	dir := t.TempDir()
 	var buf bytes.Buffer
 	p := NewProcess("pwd").Apply(WithStdout(&buf), WithDir(dir))
