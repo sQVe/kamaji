@@ -46,9 +46,9 @@ func SpawnClaude(cfg SpawnConfig) (*SpawnResult, error) {
 	}
 
 	p := NewProcess("claude",
-		"-p", cfg.Prompt,
-		"--dangerously-skip-permissions",
-		"--output-format", "stream-json",
+		"--print", cfg.Prompt, // non-interactive mode with initial prompt
+		"--dangerously-skip-permissions", // auto-accept all tool calls without user confirmation
+		"--output-format", "stream-json", // structured output for programmatic parsing
 	)
 
 	p.Apply(WithDir(cfg.WorkDir))
