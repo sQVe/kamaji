@@ -16,6 +16,7 @@ env:
 jobs:
   changes:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft != true
     outputs:
       code: ${{ steps.filter.outputs.code }}
     steps:
@@ -34,7 +35,9 @@ jobs:
 
   lint:
     needs: changes
-    if: needs.changes.outputs.code == 'true' || github.event_name == 'push'
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
@@ -59,8 +62,14 @@ jobs:
 
   test-unit:
     needs: changes
-    if: needs.changes.outputs.code == 'true' || github.event_name == 'push'
-    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Check for Go source files
@@ -92,8 +101,14 @@ jobs:
 
   test-integration:
     needs: changes
-    if: needs.changes.outputs.code == 'true' || github.event_name == 'push'
-    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Check for Go source files
@@ -194,7 +209,9 @@ jobs:
 
   build:
     needs: [changes, lint, test-unit]
-    if: needs.changes.outputs.code == 'true' || github.event_name == 'push'
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
