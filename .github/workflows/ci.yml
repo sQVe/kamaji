@@ -235,3 +235,23 @@ jobs:
         run: make build-dev
       - if: steps.check.outputs.has_go_files == 'true'
         run: ./bin/kamaji --version
+
+  ci:
+    if: always()
+    needs: [changes, lint, test-unit, test-integration, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe # release/v1
+        with:
+          allowed-skips: >-
+            ${{
+              github.event.pull_request.draft == true
+              && 'changes, lint, test-unit, test-integration, build'
+              || (
+                needs.changes.outputs.code != 'true'
+                && github.event_name == 'pull_request'
+              )
+              && 'lint, test-unit, test-integration, build'
+              || ''
+            }}
+          jobs: ${{ toJSON(needs) }}
