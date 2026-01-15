@@ -128,13 +128,13 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
       - if: steps.check.outputs.has_go_files == 'true'
-        run: go install gotest.tools/gotestsum@v1.13.0
-      - if: steps.check.outputs.has_go_files == 'true'
         run: |
           git config --global user.email "ci@kamaji.dev"
           git config --global user.name "Kamaji CI"
           git config --global init.defaultBranch main
           git config --global commit.gpgsign false
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: go install gotest.tools/gotestsum@v1.13.0
       - if: steps.check.outputs.has_go_files == 'true'
         run: make test-integration
 
