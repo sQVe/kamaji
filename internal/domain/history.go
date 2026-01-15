@@ -17,3 +17,11 @@ type FailedAttempt struct {
 	Task    string `yaml:"task"`
 	Summary string `yaml:"summary"`
 }
+
+// HistorySummary provides aggregate statistics for ticket history.
+type HistorySummary struct {
+	TotalCompleted int
+	TotalFailed    int
+	TotalInsights  int
+	TicketCount    int
+}
