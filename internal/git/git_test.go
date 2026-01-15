@@ -31,6 +31,7 @@ func initTestRepo(t *testing.T, dir string, branches ...string) {
 	run("config", "user.email", "test@test.com")
 	run("config", "user.name", "Test")
 	run("config", "commit.gpgsign", "false")
+	run("config", "core.autocrlf", "false")
 
 	// Create initial commit so we have a valid HEAD
 	readme := filepath.Join(dir, "README.md")
