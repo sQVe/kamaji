@@ -1,9 +1,11 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/sqve/kamaji/internal/domain"
@@ -679,5 +681,65 @@ func TestGetAllHistoriesSummary_WithNilElements(t *testing.T) {
 	}
 	if summary.TicketCount != 2 {
 		t.Errorf("TicketCount: got %d, want 2 (skipping nil)", summary.TicketCount)
+	}
+}
+
+func TestConcurrentWrites_NoCorruption(t *testing.T) {
+	dir := t.TempDir()
+	ticket := "concurrent-ticket"
+	writers := 10
+	writesPerWriter := 5
+
+	var wg sync.WaitGroup
+	wg.Add(writers * 3)
+
+	for i := range writers {
+		go func(id int) {
+			defer wg.Done()
+			for j := range writesPerWriter {
+				if err := RecordCompleted(dir, ticket, fmt.Sprintf("task-%d-%d", id, j), "done"); err != nil {
+					t.Errorf("RecordCompleted failed: %v", err)
+				}
+			}
+		}(i)
+
+		go func(id int) {
+			defer wg.Done()
+			for j := range writesPerWriter {
+				if err := RecordFailed(dir, ticket, fmt.Sprintf("fail-%d-%d", id, j), "error"); err != nil {
+					t.Errorf("RecordFailed failed: %v", err)
+				}
+			}
+		}(i)
+
+		go func(id int) {
+			defer wg.Done()
+			for j := range writesPerWriter {
+				if err := RecordInsight(dir, ticket, fmt.Sprintf("insight-%d-%d", id, j)); err != nil {
+					t.Errorf("RecordInsight failed: %v", err)
+				}
+			}
+		}(i)
+	}
+
+	wg.Wait()
+
+	history, err := LoadTicketHistory(dir, ticket)
+	if err != nil {
+		t.Fatalf("LoadTicketHistory error: %v", err)
+	}
+
+	expectedCompleted := writers * writesPerWriter
+	expectedFailed := writers * writesPerWriter
+	expectedInsights := writers * writesPerWriter
+
+	if len(history.Completed) != expectedCompleted {
+		t.Errorf("Completed: got %d, want %d", len(history.Completed), expectedCompleted)
+	}
+	if len(history.FailedAttempts) != expectedFailed {
+		t.Errorf("FailedAttempts: got %d, want %d", len(history.FailedAttempts), expectedFailed)
+	}
+	if len(history.Insights) != expectedInsights {
+		t.Errorf("Insights: got %d, want %d", len(history.Insights), expectedInsights)
 	}
 }
