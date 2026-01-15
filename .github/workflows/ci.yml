@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: '1.25.5'
+  GO_VERSION: "1.25.5"
 
 jobs:
   changes:
@@ -58,7 +58,7 @@ jobs:
       - uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9
         if: steps.check.outputs.has_go_files == 'true'
         with:
-          version: v2.7.2
+          version: v2.8.0
 
   test-unit:
     needs: changes
@@ -98,7 +98,7 @@ jobs:
       - if: steps.check.outputs.has_go_files == 'true'
         run: make test-coverage
         env:
-          CI: 'true'
+          CI: "true"
 
   test-integration:
     needs: changes

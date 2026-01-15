@@ -2,11 +2,11 @@ name: Security Audit
 
 on:
   schedule:
-    - cron: '0 9 * * 1'
+    - cron: "0 9 * * 1"
   pull_request:
     paths:
-      - 'go.mod'
-      - 'go.sum'
+      - "go.mod"
+      - "go.sum"
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: '1.25.5'
+  GO_VERSION: "1.25.5"
 
 jobs:
   govulncheck:
