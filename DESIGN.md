@@ -1,22 +1,22 @@
 # Kamaji
 
-External Go CLI that orchestrates autonomous coding sprints by spawning fresh Claude Code sessions per task.
+External Go CLI that orchestrates autonomous coding sprints by spawning fresh agent sessions per task.
 
 ## Problem
 
-Running the loop inside Claude Code causes:
+Running the loop inside an agent causes:
 
 - **Context pollution** - past work bleeds into future tasks
 - **Context exhaustion** - less cognitive room as session grows
 - **No parallelization** - single session bottleneck
-- **Vendor lock-in** - tied to Claude Code hooks
+- **Vendor lock-in** - tied to agent-specific hooks
 
 ## Solution
 
 External orchestrator that:
 
 - Owns the state machine
-- Spawns fresh Claude Code sessions per task
+- Spawns fresh agent sessions per task
 - Manages git operations (commits, branches, resets)
 - Exposes MCP server for completion signals
 
@@ -25,14 +25,14 @@ External orchestrator that:
 │              Kamaji (Go CLI)            │
 │  - State machine                        │
 │  - Reads/writes kamaji.yaml             │
-│  - Spawns Claude Code sessions          │
+│  - Spawns agent sessions                │
 │  - MCP server for signals               │
 └─────────────────────────────────────────┘
            │                    ▲
            │ spawns             │ task_complete / note_insight
            ▼                    │
 ┌─────────────────────────────────────────┐
-│         Claude Code Session             │
+│            Agent Session                │
 │  (fresh context per task)               │
 └─────────────────────────────────────────┘
 ```
@@ -102,13 +102,13 @@ tickets:
 
 ## MCP server
 
-Kamaji runs an SSE-based MCP server that Claude Code connects to.
+Kamaji runs an SSE-based MCP server that agents connect to.
 
 - **Transport**: Server-Sent Events (SSE)
 - **Endpoint**: `http://localhost:<port>/mcp`
 - **Port**: Dynamically assigned (or configurable via `--port`)
 
-Claude Code is spawned with `--mcp-config` pointing to a temp file:
+The agent is spawned with MCP config pointing to a temp file:
 
 ```json
 {
