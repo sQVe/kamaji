@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 
 run:
   timeout: 5m
@@ -14,7 +14,7 @@ formatters:
     - goimports
   settings:
     gofumpt:
-      module-path: 'github.com/sqve/kamaji'
+      module-path: "github.com/sqve/kamaji"
       extra-rules: true
 
 linters:
@@ -68,8 +68,8 @@ linters:
       min-len: 3
       min-occurrences: 3
       ignore-string-values:
-        - '^(true|false|yes|no|on|off)$' # Boolean strings
-        - '^[0-9]+$' # Numeric strings like "1", "0"
+        - "^(true|false|yes|no|on|off)$" # Boolean strings
+        - "^[0-9]+$" # Numeric strings like "1", "0"
 
     gocritic:
       enabled-tags:

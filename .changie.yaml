@@ -1,12 +1,12 @@
 changesDir: .changes
 unreleasedDir: unreleased
-headerPath: ''
+headerPath: ""
 changelogPath: CHANGELOG.md
 versionExt: md
 versionFormat: '## [{{.Version}}](https://github.com/sQVe/kamaji/releases/tag/{{.Version}}) - {{.Time.Format "2006-01-02"}}'
-kindFormat: '### {{.Kind}}'
-changeFormat: '- {{.Body}}{{if .Custom.Issue}} ([#{{.Custom.Issue}}](https://github.com/sQVe/kamaji/issues/{{.Custom.Issue}})){{end}}'
-fragmentFileFormat: '{{.Kind | lower}}-{{.Custom.Issue}}{{if not .Custom.Issue}}{{randAlphaNum 8}}{{end}}'
+kindFormat: "### {{.Kind}}"
+changeFormat: "- {{.Body}}{{if .Custom.Issue}} ([#{{.Custom.Issue}}](https://github.com/sQVe/kamaji/issues/{{.Custom.Issue}})){{end}}"
+fragmentFileFormat: "{{.Kind | lower}}-{{.Custom.Issue}}{{if not .Custom.Issue}}{{randAlphaNum 8}}{{end}}"
 
 body:
   type: string

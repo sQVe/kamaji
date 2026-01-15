@@ -3,13 +3,13 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
 
 env:
-  GO_VERSION: '1.25.5'
+  GO_VERSION: "1.25.5"
 
 jobs:
   release:
@@ -41,7 +41,7 @@ jobs:
 
       - uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6
         with:
-          version: '~> v2'
+          version: "~> v2"
           args: release --clean --skip=validate --release-notes=release_notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

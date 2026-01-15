@@ -22,7 +22,7 @@ builds:
 archives:
   - formats:
       - tar.gz
-    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
   name_template: checksums.txt
@@ -33,7 +33,7 @@ changelog:
 
 nfpms:
   - package_name: kamaji
-    file_name_template: '{{ .ConventionalFileName }}'
+    file_name_template: "{{ .ConventionalFileName }}"
     homepage: https://github.com/sQVe/kamaji
     maintainer: sQVe <oskargrunning@gmail.com>
     description: Orchestrate autonomous coding sprints with fresh context per task
