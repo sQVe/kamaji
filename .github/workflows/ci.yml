@@ -16,6 +16,7 @@ env:
 jobs:
   changes:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft != true
     outputs:
       code: ${{ steps.filter.outputs.code }}
     steps:
@@ -34,7 +35,9 @@ jobs:
 
   lint:
     needs: changes
-    if: needs.changes.outputs.code == 'true' || github.event_name == 'push'
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
@@ -59,12 +62,19 @@ jobs:
 
   test-unit:
     needs: changes
-    if: needs.changes.outputs.code == 'true' || github.event_name == 'push'
-    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Check for Go source files
         id: check
+        shell: bash
         run: |
           if find . -name '*.go' -not -path './vendor/*' | grep -q .; then
             echo "has_go_files=true" >> "$GITHUB_OUTPUT"
@@ -92,12 +102,19 @@ jobs:
 
   test-integration:
     needs: changes
-    if: needs.changes.outputs.code == 'true' || github.event_name == 'push'
-    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Check for Go source files
         id: check
+        shell: bash
         run: |
           if find . -name '*.go' -not -path './vendor/*' | grep -q .; then
             echo "has_go_files=true" >> "$GITHUB_OUTPUT"
@@ -111,13 +128,13 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
       - if: steps.check.outputs.has_go_files == 'true'
-        run: go install gotest.tools/gotestsum@v1.13.0
-      - if: steps.check.outputs.has_go_files == 'true'
         run: |
           git config --global user.email "ci@kamaji.dev"
           git config --global user.name "Kamaji CI"
           git config --global init.defaultBranch main
           git config --global commit.gpgsign false
+      - if: steps.check.outputs.has_go_files == 'true'
+        run: go install gotest.tools/gotestsum@v1.13.0
       - if: steps.check.outputs.has_go_files == 'true'
         run: make test-integration
 
@@ -194,7 +211,9 @@ jobs:
 
   build:
     needs: [changes, lint, test-unit]
-    if: needs.changes.outputs.code == 'true' || github.event_name == 'push'
+    if: |
+      github.event.pull_request.draft != true &&
+      (needs.changes.outputs.code == 'true' || github.event_name == 'push')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
