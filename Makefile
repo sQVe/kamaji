@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := test
 .PHONY: test test-unit test-integration test-coverage \
         build build-dev build-release \
-        lint fmt deadcode ci clean \
+        lint format deadcode ci clean \
         change change-new change-preview \
         deps-tools
 
@@ -66,7 +66,7 @@ lint:
 	@echo "Running golangci-lint..."
 	@golangci-lint run $(LINT_FIX)
 
-fmt:
+format:
 	@echo "Formatting code..."
 	@gofmt -w -s .
 	@echo "Formatting Markdown/JSON/YAML..."
