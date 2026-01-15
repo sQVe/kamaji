@@ -109,6 +109,213 @@ func TestServer_Shutdown(t *testing.T) {
 	}
 }
 
+func TestServer_Signals_ReturnsChannel(t *testing.T) {
+	s := NewServer()
+	ch := s.Signals()
+	if ch == nil {
+		t.Error("Signals() returned nil, want channel")
+	}
+}
+
+func TestServer_Signal_TaskComplete_Pass(t *testing.T) {
+	s := NewServer()
+	port, err := s.Start()
+	if err != nil {
+		t.Fatalf("Start() error = %v", err)
+	}
+	defer func() { _ = s.Shutdown(context.Background()) }()
+
+	// Create client and call task_complete
+	c, err := client.NewStreamableHttpClient("http://localhost:" + strconv.Itoa(port) + "/mcp")
+	if err != nil {
+		t.Fatalf("NewStreamableHttpClient() error = %v", err)
+	}
+	defer func() { _ = c.Close() }()
+
+	ctx := context.Background()
+	_, err = c.Initialize(ctx, mcp.InitializeRequest{
+		Params: mcp.InitializeParams{
+			ProtocolVersion: "2024-11-05",
+			ClientInfo:      mcp.Implementation{Name: "test", Version: "1.0.0"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Initialize() error = %v", err)
+	}
+
+	_, err = c.CallTool(ctx, mcp.CallToolRequest{
+		Params: mcp.CallToolParams{
+			Name: "task_complete",
+			Arguments: map[string]any{
+				"status":  "pass",
+				"summary": "Task done",
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("CallTool() error = %v", err)
+	}
+
+	// Check signal was emitted
+	select {
+	case sig := <-s.Signals():
+		if sig.Tool != "task_complete" {
+			t.Errorf("Signal.Tool = %q, want %q", sig.Tool, "task_complete")
+		}
+		if sig.Status != "pass" {
+			t.Errorf("Signal.Status = %q, want %q", sig.Status, "pass")
+		}
+		if sig.Summary != "Task done" {
+			t.Errorf("Signal.Summary = %q, want %q", sig.Summary, "Task done")
+		}
+	case <-time.After(time.Second):
+		t.Error("Timeout waiting for signal")
+	}
+}
+
+func TestServer_Signal_TaskComplete_Fail(t *testing.T) {
+	s := NewServer()
+	port, err := s.Start()
+	if err != nil {
+		t.Fatalf("Start() error = %v", err)
+	}
+	defer func() { _ = s.Shutdown(context.Background()) }()
+
+	c, err := client.NewStreamableHttpClient("http://localhost:" + strconv.Itoa(port) + "/mcp")
+	if err != nil {
+		t.Fatalf("NewStreamableHttpClient() error = %v", err)
+	}
+	defer func() { _ = c.Close() }()
+
+	ctx := context.Background()
+	_, _ = c.Initialize(ctx, mcp.InitializeRequest{
+		Params: mcp.InitializeParams{
+			ProtocolVersion: "2024-11-05",
+			ClientInfo:      mcp.Implementation{Name: "test", Version: "1.0.0"},
+		},
+	})
+
+	_, _ = c.CallTool(ctx, mcp.CallToolRequest{
+		Params: mcp.CallToolParams{
+			Name: "task_complete",
+			Arguments: map[string]any{
+				"status":  "fail",
+				"summary": "Something broke",
+			},
+		},
+	})
+
+	select {
+	case sig := <-s.Signals():
+		if sig.Tool != "task_complete" {
+			t.Errorf("Signal.Tool = %q, want %q", sig.Tool, "task_complete")
+		}
+		if sig.Status != "fail" {
+			t.Errorf("Signal.Status = %q, want %q", sig.Status, "fail")
+		}
+		if sig.Summary != "Something broke" {
+			t.Errorf("Signal.Summary = %q, want %q", sig.Summary, "Something broke")
+		}
+	case <-time.After(time.Second):
+		t.Error("Timeout waiting for signal")
+	}
+}
+
+func TestServer_Signal_NoteInsight(t *testing.T) {
+	s := NewServer()
+	port, err := s.Start()
+	if err != nil {
+		t.Fatalf("Start() error = %v", err)
+	}
+	defer func() { _ = s.Shutdown(context.Background()) }()
+
+	c, err := client.NewStreamableHttpClient("http://localhost:" + strconv.Itoa(port) + "/mcp")
+	if err != nil {
+		t.Fatalf("NewStreamableHttpClient() error = %v", err)
+	}
+	defer func() { _ = c.Close() }()
+
+	ctx := context.Background()
+	_, _ = c.Initialize(ctx, mcp.InitializeRequest{
+		Params: mcp.InitializeParams{
+			ProtocolVersion: "2024-11-05",
+			ClientInfo:      mcp.Implementation{Name: "test", Version: "1.0.0"},
+		},
+	})
+
+	_, _ = c.CallTool(ctx, mcp.CallToolRequest{
+		Params: mcp.CallToolParams{
+			Name: "note_insight",
+			Arguments: map[string]any{
+				"text": "Found a pattern",
+			},
+		},
+	})
+
+	select {
+	case sig := <-s.Signals():
+		if sig.Tool != "note_insight" {
+			t.Errorf("Signal.Tool = %q, want %q", sig.Tool, "note_insight")
+		}
+		if sig.Status != "" {
+			t.Errorf("Signal.Status = %q, want empty for note_insight", sig.Status)
+		}
+		if sig.Summary != "Found a pattern" {
+			t.Errorf("Signal.Summary = %q, want %q", sig.Summary, "Found a pattern")
+		}
+	case <-time.After(time.Second):
+		t.Error("Timeout waiting for signal")
+	}
+}
+
+func TestServer_Signal_MultipleInOrder(t *testing.T) {
+	s := NewServer()
+	port, err := s.Start()
+	if err != nil {
+		t.Fatalf("Start() error = %v", err)
+	}
+	defer func() { _ = s.Shutdown(context.Background()) }()
+
+	c, err := client.NewStreamableHttpClient("http://localhost:" + strconv.Itoa(port) + "/mcp")
+	if err != nil {
+		t.Fatalf("NewStreamableHttpClient() error = %v", err)
+	}
+	defer func() { _ = c.Close() }()
+
+	ctx := context.Background()
+	_, _ = c.Initialize(ctx, mcp.InitializeRequest{
+		Params: mcp.InitializeParams{
+			ProtocolVersion: "2024-11-05",
+			ClientInfo:      mcp.Implementation{Name: "test", Version: "1.0.0"},
+		},
+	})
+
+	// Send multiple tool calls
+	_, _ = c.CallTool(ctx, mcp.CallToolRequest{
+		Params: mcp.CallToolParams{
+			Name:      "note_insight",
+			Arguments: map[string]any{"text": "First"},
+		},
+	})
+	_, _ = c.CallTool(ctx, mcp.CallToolRequest{
+		Params: mcp.CallToolParams{
+			Name:      "task_complete",
+			Arguments: map[string]any{"status": "pass", "summary": "Second"},
+		},
+	})
+
+	// Verify order
+	ch := s.Signals()
+	sig1 := <-ch
+	if sig1.Summary != "First" {
+		t.Errorf("First signal.Summary = %q, want %q", sig1.Summary, "First")
+	}
+	sig2 := <-ch
+	if sig2.Summary != "Second" {
+		t.Errorf("Second signal.Summary = %q, want %q", sig2.Summary, "Second")
+	}
+}
+
 func TestServer_ToolsRegistered(t *testing.T) {
 	s := NewServer()
 
