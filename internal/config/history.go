@@ -131,7 +131,7 @@ func acquireHistoryLock(dir, ticketName string) (func(), error) {
 	lockPath := filepath.Join(lockDir, filename+".lock")
 
 	var lockFile *os.File
-	for range 50 {
+	for range 200 {
 		f, err := os.OpenFile(lockPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600) // #nosec G304 -- path derived from user working directory
 		if err == nil {
 			lockFile = f
@@ -147,9 +147,8 @@ func acquireHistoryLock(dir, ticketName string) (func(), error) {
 		return nil, fmt.Errorf("timeout acquiring history lock for %s", ticketName)
 	}
 
-	_ = lockFile.Close()
-
 	return func() {
+		_ = lockFile.Close()
 		_ = os.Remove(lockPath)
 	}, nil
 }
