@@ -86,9 +86,12 @@ func TestWriteMCPConfig_EmptyDirUsesTempDir(t *testing.T) {
 	}
 	defer func() { _ = os.Remove(path) }()
 
-	expectedDir := os.TempDir()
-	if filepath.Dir(path) != expectedDir {
-		t.Errorf("dir = %q, want %q", filepath.Dir(path), expectedDir)
+	// Use filepath.Clean to normalize paths since os.TempDir() may include
+	// a trailing slash on some platforms (e.g., macOS).
+	expectedDir := filepath.Clean(os.TempDir())
+	actualDir := filepath.Dir(path)
+	if actualDir != expectedDir {
+		t.Errorf("dir = %q, want %q", actualDir, expectedDir)
 	}
 }
 
