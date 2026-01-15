@@ -137,7 +137,7 @@ func acquireHistoryLock(dir, ticketName string) (func(), error) {
 			lockFile = f
 			break
 		}
-		if !errors.Is(err, os.ErrExist) {
+		if !errors.Is(err, os.ErrExist) && !errors.Is(err, os.ErrPermission) {
 			return nil, fmt.Errorf("acquiring history lock: %w", err)
 		}
 		time.Sleep(10 * time.Millisecond)
