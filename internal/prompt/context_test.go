@@ -1,17 +1,16 @@
 package prompt
 
 import (
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/sqve/kamaji/internal/domain"
+	"github.com/sqve/kamaji/internal/testutil"
 )
 
 func TestAssembleContext_FullSprint(t *testing.T) {
 	dir := t.TempDir()
-	setupHistory(t, dir, "ticket-1", `ticket: ticket-1
+	testutil.WriteHistoryFile(t, dir, "ticket-1", `ticket: ticket-1
 completed:
   - task: "task 0"
     summary: "done"
@@ -40,16 +39,16 @@ insights:
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	assertContains(t, result, "<task>")
-	assertContains(t, result, `<ticket name="ticket-1"`)
-	assertContains(t, result, "<current>")
-	assertContains(t, result, "<steps>")
-	assertContains(t, result, "<verify>")
-	assertContains(t, result, "<rules>")
-	assertContains(t, result, "<history>")
-	assertContains(t, result, "<completed>")
-	assertContains(t, result, "<insights>")
-	assertContains(t, result, "<instructions>")
+	testutil.AssertContains(t, result, "<task>")
+	testutil.AssertContains(t, result, `<ticket name="ticket-1"`)
+	testutil.AssertContains(t, result, "<current>")
+	testutil.AssertContains(t, result, "<steps>")
+	testutil.AssertContains(t, result, "<verify>")
+	testutil.AssertContains(t, result, "<rules>")
+	testutil.AssertContains(t, result, "<history>")
+	testutil.AssertContains(t, result, "<completed>")
+	testutil.AssertContains(t, result, "<insights>")
+	testutil.AssertContains(t, result, "<instructions>")
 }
 
 func TestAssembleContext_NoHistoryFile(t *testing.T) {
@@ -73,9 +72,9 @@ func TestAssembleContext_NoHistoryFile(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	assertContains(t, result, "<task>")
-	assertContains(t, result, `<ticket name="ticket-2"`)
-	assertNotContains(t, result, "<history>")
+	testutil.AssertContains(t, result, "<task>")
+	testutil.AssertContains(t, result, `<ticket name="ticket-2"`)
+	testutil.AssertNotContains(t, result, "<history>")
 }
 
 func TestAssembleContext_SprintComplete(t *testing.T) {
@@ -125,31 +124,5 @@ func TestAssembleContext_NilState(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "state is nil") {
 		t.Errorf("expected 'state is nil' error, got: %v", err)
-	}
-}
-
-func setupHistory(t *testing.T, dir, ticketName, content string) {
-	t.Helper()
-	historyDir := filepath.Join(dir, ".kamaji", "history")
-	if err := os.MkdirAll(historyDir, 0o750); err != nil {
-		t.Fatalf("failed to create history dir: %v", err)
-	}
-	path := filepath.Join(historyDir, ticketName+".yaml")
-	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
-		t.Fatalf("failed to write history file: %v", err)
-	}
-}
-
-func assertContains(t *testing.T, s, substr string) {
-	t.Helper()
-	if !strings.Contains(s, substr) {
-		t.Errorf("expected output to contain %q", substr)
-	}
-}
-
-func assertNotContains(t *testing.T, s, substr string) {
-	t.Helper()
-	if strings.Contains(s, substr) {
-		t.Errorf("expected output to NOT contain %q", substr)
 	}
 }
