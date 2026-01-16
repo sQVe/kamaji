@@ -6,50 +6,13 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/sqve/kamaji/internal/testutil"
 )
-
-// initTestRepo creates a git repo in dir with an initial commit and optional branches.
-func initTestRepo(t *testing.T, dir string, branches ...string) {
-	t.Helper()
-
-	run := func(args ...string) {
-		cmd := exec.Command("git", args...)
-		cmd.Dir = dir
-		cmd.Env = append(os.Environ(),
-			"GIT_AUTHOR_NAME=Test",
-			"GIT_AUTHOR_EMAIL=test@test.com",
-			"GIT_COMMITTER_NAME=Test",
-			"GIT_COMMITTER_EMAIL=test@test.com",
-		)
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			t.Fatalf("git %v failed: %v\n%s", args, err, out)
-		}
-	}
-
-	run("init", "-b", "main")
-	run("config", "user.email", "test@test.com")
-	run("config", "user.name", "Test")
-	run("config", "commit.gpgsign", "false")
-	run("config", "core.autocrlf", "false")
-
-	// Create initial commit so we have a valid HEAD
-	readme := filepath.Join(dir, "README.md")
-	if err := os.WriteFile(readme, []byte("# Test\n"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	run("add", ".")
-	run("commit", "-m", "initial commit")
-
-	// Create additional branches
-	for _, branch := range branches {
-		run("branch", branch)
-	}
-}
 
 func TestCreateBranch_Success(t *testing.T) {
 	dir := t.TempDir()
-	initTestRepo(t, dir)
+	testutil.InitGitRepo(t, dir)
 
 	err := CreateBranch(dir, "main", "feature/test-123")
 	if err != nil {
@@ -71,7 +34,7 @@ func TestCreateBranch_Success(t *testing.T) {
 
 func TestCreateBranch_MissingBaseBranch(t *testing.T) {
 	dir := t.TempDir()
-	initTestRepo(t, dir)
+	testutil.InitGitRepo(t, dir)
 
 	err := CreateBranch(dir, "nonexistent-branch", "feature/test-123")
 	if err == nil {
@@ -84,7 +47,7 @@ func TestCreateBranch_MissingBaseBranch(t *testing.T) {
 
 func TestCreateBranch_ExistingTicketBranch(t *testing.T) {
 	dir := t.TempDir()
-	initTestRepo(t, dir, "feature/existing")
+	testutil.InitGitRepo(t, dir, "feature/existing")
 
 	err := CreateBranch(dir, "main", "feature/existing")
 	if err == nil {
@@ -107,7 +70,7 @@ func TestCreateBranch_NotAGitRepo(t *testing.T) {
 
 func TestCreateBranch_FromDifferentBranch(t *testing.T) {
 	dir := t.TempDir()
-	initTestRepo(t, dir, "develop")
+	testutil.InitGitRepo(t, dir, "develop")
 
 	// Start on a different branch
 	cmd := exec.Command("git", "checkout", "develop")
@@ -139,7 +102,7 @@ func TestCreateBranch_FromDifferentBranch(t *testing.T) {
 
 func TestCommitChanges_Success(t *testing.T) {
 	dir := t.TempDir()
-	initTestRepo(t, dir)
+	testutil.InitGitRepo(t, dir)
 
 	newFile := filepath.Join(dir, "new.txt")
 	if err := os.WriteFile(newFile, []byte("new content\n"), 0o600); err != nil {
@@ -165,7 +128,7 @@ func TestCommitChanges_Success(t *testing.T) {
 
 func TestCommitChanges_NoChanges(t *testing.T) {
 	dir := t.TempDir()
-	initTestRepo(t, dir)
+	testutil.InitGitRepo(t, dir)
 
 	err := CommitChanges(dir, "test: nothing to commit")
 	if err == nil {
@@ -178,7 +141,7 @@ func TestCommitChanges_NoChanges(t *testing.T) {
 
 func TestCommitChanges_EmptyMessage(t *testing.T) {
 	dir := t.TempDir()
-	initTestRepo(t, dir)
+	testutil.InitGitRepo(t, dir)
 
 	// Create a file so there's something to commit
 	newFile := filepath.Join(dir, "new.txt")
@@ -208,7 +171,7 @@ func TestCommitChanges_NotAGitRepo(t *testing.T) {
 
 func TestResetToHead_Success(t *testing.T) {
 	dir := t.TempDir()
-	initTestRepo(t, dir)
+	testutil.InitGitRepo(t, dir)
 
 	// Create uncommitted changes to tracked file
 	readme := filepath.Join(dir, "README.md")
@@ -244,7 +207,7 @@ func TestResetToHead_Success(t *testing.T) {
 
 func TestResetToHead_NoChanges(t *testing.T) {
 	dir := t.TempDir()
-	initTestRepo(t, dir)
+	testutil.InitGitRepo(t, dir)
 
 	// Reset with no changes should be idempotent
 	err := ResetToHead(dir)
