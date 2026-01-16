@@ -32,6 +32,6 @@ func AssertPathEqual(t *testing.T, got, want string) {
 	gotClean := filepath.Clean(got)
 	wantClean := filepath.Clean(want)
 	if gotClean != wantClean {
-		t.Errorf("path = %q, want %q", got, want)
+		t.Errorf("path = %q, want %q", gotClean, wantClean)
 	}
 }
