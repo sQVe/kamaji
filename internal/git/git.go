@@ -7,6 +7,9 @@ import (
 	"os/exec"
 )
 
+// ErrNothingToCommit is returned when CommitChanges is called with no staged changes.
+var ErrNothingToCommit = errors.New("nothing to commit")
+
 // runGit executes a git command in the specified directory.
 //
 //nolint:unparam // stdout will be used by future operations
@@ -69,7 +72,7 @@ func CommitChanges(workDir, message string) error {
 	_, _, err = runGit(workDir, "diff", "--cached", "--quiet")
 	if err == nil {
 		// Exit 0 means no differences (nothing staged)
-		return errors.New("nothing to commit")
+		return ErrNothingToCommit
 	}
 
 	_, stderr, err = runGit(workDir, "commit", "-m", message)
