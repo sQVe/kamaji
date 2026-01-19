@@ -13,6 +13,12 @@ const (
 	SignalToolNoteInsight  = "note_insight"
 )
 
+// Status constants for task_complete results.
+const (
+	StatusPass = "pass"
+	StatusFail = "fail"
+)
+
 // Signal represents a tool call event emitted by the MCP server.
 type Signal struct {
 	Tool    string // SignalToolTaskComplete or SignalToolNoteInsight
@@ -33,7 +39,7 @@ type TaskCompleteResult struct {
 
 //nolint:unparam // error return required by mcp-go TypedToolHandler interface
 func HandleTaskComplete(_ context.Context, _ mcp.CallToolRequest, args TaskCompleteArgs) (*mcp.CallToolResult, error) {
-	if args.Status != "pass" && args.Status != "fail" {
+	if args.Status != StatusPass && args.Status != StatusFail {
 		return mcp.NewToolResultError("status must be pass or fail"), nil
 	}
 
