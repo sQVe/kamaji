@@ -1,0 +1,8 @@
+# Test: start command basics - help output and missing config error
+exec kamaji start --help
+stdout 'Execute tasks sequentially'
+stdout 'kamaji.yaml'
+
+! exec kamaji start
+stderr 'kamaji.yaml'
+stderr 'no such file'

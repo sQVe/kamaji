@@ -1,0 +1,18 @@
+# Test: task_complete with minimal summary handled gracefully
+gitinit
+cp kamaji.yaml kamaji.yaml
+exec git add .
+exec git commit -m 'init'
+
+env KAMAJI_AGENT_SCRIPT='task_complete pass "ok"'
+exec kamaji start --spawner-cmd=mock-agent
+stdout 'Task completed: ok'
+
+-- kamaji.yaml --
+name: test
+base_branch: main
+tickets:
+  - name: TEST-1
+    branch: feat/test-1
+    tasks:
+      - description: Task 1

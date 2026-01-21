@@ -1,0 +1,18 @@
+# Test: Unicode characters in summary handled correctly
+gitinit
+cp kamaji.yaml kamaji.yaml
+exec git add .
+exec git commit -m 'init'
+
+env KAMAJI_AGENT_SCRIPT='task_complete pass "Fixed bug 🐛 in 日本語 module"'
+exec kamaji start --spawner-cmd=mock-agent
+stdout 'Task completed'
+
+-- kamaji.yaml --
+name: test
+base_branch: main
+tickets:
+  - name: TEST-1
+    branch: feat/test-1
+    tasks:
+      - description: Task 1

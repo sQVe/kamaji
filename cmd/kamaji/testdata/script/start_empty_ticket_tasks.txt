@@ -1,0 +1,22 @@
+# Test: Ticket with empty tasks list skipped, next ticket runs
+gitinit
+cp kamaji.yaml kamaji.yaml
+exec git add .
+exec git commit -m 'init'
+
+env KAMAJI_AGENT_SCRIPT='task_complete pass "Done"'
+exec kamaji start --spawner-cmd=mock-agent
+stdout 'Sprint "test" complete'
+stdout '2 tickets, 1 tasks'
+
+-- kamaji.yaml --
+name: test
+base_branch: main
+tickets:
+  - name: TEST-EMPTY
+    branch: feat/test-empty
+    tasks: []
+  - name: TEST-1
+    branch: feat/test-1
+    tasks:
+      - description: Task 1

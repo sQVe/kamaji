@@ -1,0 +1,22 @@
+# Test: Multiple tasks complete successfully in sequence
+gitinit
+cp kamaji.yaml kamaji.yaml
+exec git add .
+exec git commit -m 'init'
+
+env KAMAJI_AGENT_SCRIPT='task_complete pass "Task done"'
+exec kamaji start --spawner-cmd=mock-agent
+stdout 'Sprint "test" complete'
+
+exists .kamaji/history/TEST-1.yaml
+
+-- kamaji.yaml --
+name: test
+base_branch: main
+tickets:
+  - name: TEST-1
+    branch: feat/test-1
+    tasks:
+      - description: Task 1
+      - description: Task 2
+      - description: Task 3

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"strconv"
 
 	"github.com/sqve/kamaji/internal/config"
 )
@@ -17,9 +18,13 @@ type SpawnConfig struct {
 	Stderr  io.Writer // Optional: defaults to os.Stderr
 }
 
-// SpawnResult contains the spawned process and paths for cleanup.
+type Waiter interface {
+	Wait() error
+	Kill() error
+}
+
 type SpawnResult struct {
-	Process    *Process
+	Process    Waiter // Process that can be waited on or killed
 	ConfigPath string // Path to .mcp.json, caller should remove after process exits
 }
 
@@ -65,4 +70,43 @@ func SpawnClaude(cfg SpawnConfig) (*SpawnResult, error) {
 	}
 
 	return &SpawnResult{Process: p, ConfigPath: configPath}, nil
+}
+
+// SpawnCommand runs an arbitrary command for testing purposes.
+// Unlike SpawnClaude, it ignores cfg.Prompt since the command receives context
+// via environment variables (KAMAJI_MCP_PORT, KAMAJI_WORK_DIR).
+func SpawnCommand(cmd string, cfg SpawnConfig) (*SpawnResult, error) {
+	if cfg.MCPPort <= 0 || cfg.MCPPort > 65535 {
+		return nil, errors.New("MCPPort must be between 1 and 65535")
+	}
+	if cfg.WorkDir == "" {
+		return nil, errors.New("WorkDir is required")
+	}
+	info, err := os.Stat(cfg.WorkDir)
+	if err != nil || !info.IsDir() {
+		return nil, errors.New("WorkDir must be an existing directory")
+	}
+
+	env := append(os.Environ(),
+		"KAMAJI_MCP_PORT="+strconv.Itoa(cfg.MCPPort),
+		"KAMAJI_WORK_DIR="+cfg.WorkDir,
+	)
+
+	p := NewProcess(cmd)
+	p.Apply(
+		WithDir(cfg.WorkDir),
+		WithEnv(env),
+	)
+	if cfg.Stdout != nil {
+		p.Apply(WithStdout(cfg.Stdout))
+	}
+	if cfg.Stderr != nil {
+		p.Apply(WithStderr(cfg.Stderr))
+	}
+
+	if err := p.Start(); err != nil {
+		return nil, err
+	}
+
+	return &SpawnResult{Process: p}, nil
 }
