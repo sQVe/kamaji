@@ -222,6 +222,7 @@ func runTask(ctx context.Context, tc *taskContext) (TaskResult, error) {
 		select {
 		case <-ctx.Done():
 			_ = spawnResult.Process.Kill()
+			<-done
 			return TaskResult{}, ctx.Err()
 		case sig, ok := <-tc.server.Signals():
 			if !ok {
