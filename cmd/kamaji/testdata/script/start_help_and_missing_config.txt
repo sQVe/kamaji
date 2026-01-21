@@ -4,5 +4,5 @@ stdout 'Execute tasks sequentially'
 stdout 'kamaji.yaml'
 
 ! exec kamaji start
+stderr 'reading sprint file'
 stderr 'kamaji.yaml'
-stderr 'no such file'
