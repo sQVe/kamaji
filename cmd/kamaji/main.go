@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -10,16 +12,22 @@ import (
 
 func main() {
 	if err := rootCmd().Execute(); err != nil {
+		if !errors.Is(err, errSprintFailed) {
+			fmt.Fprintln(os.Stderr, err)
+		}
 		os.Exit(1)
 	}
 }
 
 func rootCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "kamaji",
-		Short:   "Kamaji orchestrates autonomous coding sprints",
-		Version: version.Full(),
+		Use:           "kamaji",
+		Short:         "Kamaji orchestrates autonomous coding sprints",
+		Version:       version.Full(),
+		SilenceErrors: true,
 	}
+
+	cmd.AddCommand(startCmd())
 
 	return cmd
 }

@@ -1,0 +1,20 @@
+# Test: Multiple note_insight calls before task_complete all recorded
+gitinit
+cp kamaji.yaml kamaji.yaml
+exec git add .
+exec git commit -m 'init'
+
+env KAMAJI_AGENT_SCRIPT='note_insight "First insight"\nnote_insight "Second insight"\ntask_complete pass "Done"'
+exec kamaji start --spawner-cmd=mock-agent
+stdout 'Insight: First insight'
+stdout 'Insight: Second insight'
+stdout 'Task completed: Done'
+
+-- kamaji.yaml --
+name: test
+base_branch: main
+tickets:
+  - name: TEST-1
+    branch: feat/test-1
+    tasks:
+      - description: Task 1

@@ -1,0 +1,13 @@
+# Test: Invalid YAML syntax fails with parse error
+gitinit
+cp kamaji.yaml kamaji.yaml
+
+! exec kamaji start
+stderr 'yaml'
+
+-- kamaji.yaml --
+name: test
+base_branch: main
+tickets:
+  - name: TEST-1
+    branch: [invalid: yaml: syntax

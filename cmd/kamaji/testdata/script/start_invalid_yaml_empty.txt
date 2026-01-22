@@ -1,0 +1,10 @@
+# Test: Empty kamaji.yaml fails with validation error
+gitinit
+
+# Create empty file
+cp kamaji.yaml kamaji.yaml
+
+! exec kamaji start
+stderr 'missing required field'
+
+-- kamaji.yaml --

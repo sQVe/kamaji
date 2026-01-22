@@ -1,0 +1,23 @@
+# Test: Branch already exists from previous run - reuses without error
+gitinit
+cp kamaji.yaml kamaji.yaml
+exec git add .
+exec git commit -m 'init'
+
+# Create the branch ahead of time to simulate previous run
+exec git checkout -b feat/test-1
+exec git checkout main
+
+env KAMAJI_AGENT_SCRIPT='task_complete pass "Done"'
+exec kamaji start --spawner-cmd=mock-agent
+stdout 'Using existing branch'
+stdout 'Task completed: Done'
+
+-- kamaji.yaml --
+name: test
+base_branch: main
+tickets:
+  - name: TEST-1
+    branch: feat/test-1
+    tasks:
+      - description: Task 1

@@ -1,0 +1,17 @@
+# Test: --spawner-cmd with nonexistent command fails with clear error
+gitinit
+cp kamaji.yaml kamaji.yaml
+exec git add .
+exec git commit -m 'init'
+
+! exec kamaji start --spawner-cmd=nonexistent-command-12345
+stderr 'executable file not found'
+
+-- kamaji.yaml --
+name: test
+base_branch: main
+tickets:
+  - name: TEST-1
+    branch: feat/test-1
+    tasks:
+      - description: Task 1
