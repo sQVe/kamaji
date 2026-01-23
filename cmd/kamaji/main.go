@@ -12,7 +12,7 @@ import (
 
 func main() {
 	if err := rootCmd().Execute(); err != nil {
-		if !errors.Is(err, errSprintFailed) {
+		if !errors.Is(err, errSprintFailed) && !errors.Is(err, errConfigInvalid) {
 			fmt.Fprintln(os.Stderr, err)
 		}
 		os.Exit(1)
@@ -28,6 +28,7 @@ func rootCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(startCmd())
+	cmd.AddCommand(validateCmd())
 
 	return cmd
 }
