@@ -18,7 +18,7 @@
 
 **Milestone Goal:** Add commands to help users create and refine sprint configs before execution.
 
-- [ ] **Phase 11: Validation** - Schema and semantic validation for kamaji.yaml
+- [x] **Phase 11: Validation** - Schema and semantic validation for kamaji.yaml
 - [ ] **Phase 12: Init** - Create template config with explanatory comments
 - [ ] **Phase 13: Refine** - AI-assisted config improvement via Claude Code
 - [ ] **Phase 14: Integration** - Wire validation into start command
@@ -30,19 +30,12 @@
 **Goal**: Users can validate their kamaji.yaml config with clear feedback
 **Depends on**: Phase 10 (v1.0 complete)
 **Requirements**: VALD-01, VALD-02, VALD-03, VALD-04
-**Success Criteria** (what must be TRUE):
-
-1. User can run `kamaji validate` and see pass/fail result
-2. Invalid YAML structure produces error with line number
-3. Missing required fields produce errors naming the field
-4. Empty descriptions and invalid dependency references are caught
-5. All errors include enough context to locate and fix the problem
-   **Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
 
-- [ ] 11-01: TBD
-- [ ] 11-02: TBD
+- [x] 11-01-PLAN.md - TDD validation logic with multi-error collection
+- [x] 11-02-PLAN.md - Validate command CLI wiring
 
 ### Phase 12: Init
 
@@ -102,7 +95,7 @@ Plans:
 | Phase           | Milestone | Plans Complete | Status      | Completed  |
 | --------------- | --------- | -------------- | ----------- | ---------- |
 | 1-10            | v1.0      | 23/23          | Complete    | 2026-01-23 |
-| 11. Validation  | v1.1      | 0/2            | Not started | -          |
+| 11. Validation  | v1.1      | 2/2            | Complete    | 2026-01-23 |
 | 12. Init        | v1.1      | 0/1            | Not started | -          |
 | 13. Refine      | v1.1      | 0/3            | Not started | -          |
 | 14. Integration | v1.1      | 0/1            | Not started | -          |
@@ -110,4 +103,4 @@ Plans:
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-01-23_
+_Last updated: 2026-01-23 after Phase 11 completion_

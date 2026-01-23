@@ -27,10 +27,10 @@ Requirements for sprint planning feature. Each maps to roadmap phases.
 
 ### Validation
 
-- [ ] **VALD-01**: User can run `kamaji validate` for one-off config check
-- [ ] **VALD-02**: Validation checks YAML schema (structure, required fields, types)
-- [ ] **VALD-03**: Validation checks semantic heuristics (no empty descriptions, deps exist)
-- [ ] **VALD-04**: Validation returns clear error messages with locations
+- [x] **VALD-01**: User can run `kamaji validate` for one-off config check
+- [x] **VALD-02**: Validation checks YAML schema (structure, required fields, types)
+- [x] **VALD-03**: Validation checks semantic heuristics (no empty descriptions, deps exist)
+- [x] **VALD-04**: Validation returns clear error messages with locations
 
 ### Integration
 
@@ -61,25 +61,25 @@ Explicitly excluded from this milestone.
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase    | Status  |
-| ----------- | -------- | ------- |
-| INIT-01     | Phase 12 | Pending |
-| INIT-02     | Phase 12 | Pending |
-| INIT-03     | Phase 12 | Pending |
-| REFN-01     | Phase 13 | Pending |
-| REFN-02     | Phase 13 | Pending |
-| REFN-03     | Phase 13 | Pending |
-| REFN-04     | Phase 13 | Pending |
-| REFN-05     | Phase 13 | Pending |
-| REFN-06     | Phase 13 | Pending |
-| REFN-07     | Phase 13 | Pending |
-| REFN-08     | Phase 13 | Pending |
-| REFN-09     | Phase 13 | Pending |
-| VALD-01     | Phase 11 | Pending |
-| VALD-02     | Phase 11 | Pending |
-| VALD-03     | Phase 11 | Pending |
-| VALD-04     | Phase 11 | Pending |
-| INTG-01     | Phase 14 | Pending |
+| Requirement | Phase    | Status   |
+| ----------- | -------- | -------- |
+| INIT-01     | Phase 12 | Pending  |
+| INIT-02     | Phase 12 | Pending  |
+| INIT-03     | Phase 12 | Pending  |
+| REFN-01     | Phase 13 | Pending  |
+| REFN-02     | Phase 13 | Pending  |
+| REFN-03     | Phase 13 | Pending  |
+| REFN-04     | Phase 13 | Pending  |
+| REFN-05     | Phase 13 | Pending  |
+| REFN-06     | Phase 13 | Pending  |
+| REFN-07     | Phase 13 | Pending  |
+| REFN-08     | Phase 13 | Pending  |
+| REFN-09     | Phase 13 | Pending  |
+| VALD-01     | Phase 11 | Complete |
+| VALD-02     | Phase 11 | Complete |
+| VALD-03     | Phase 11 | Complete |
+| VALD-04     | Phase 11 | Complete |
+| INTG-01     | Phase 14 | Pending  |
 
 **Coverage:**
 
