@@ -38,13 +38,13 @@ jobs:
             echo "has_go_files=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: github/codeql-action/init@cdefb33c0f6224e58673d9004f47f7cb3e328b89 # v4
+      - uses: github/codeql-action/init@19b2f06db2b6f5108140aeb04014ef02b648f789 # v4
         if: matrix.language != 'go' || steps.check.outputs.has_go_files == 'true'
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
 
-      - uses: github/codeql-action/analyze@cdefb33c0f6224e58673d9004f47f7cb3e328b89 # v4
+      - uses: github/codeql-action/analyze@19b2f06db2b6f5108140aeb04014ef02b648f789 # v4
         if: matrix.language != 'go' || steps.check.outputs.has_go_files == 'true'
         with:
           category: "/language:${{ matrix.language }}"
