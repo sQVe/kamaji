@@ -24,7 +24,7 @@ kamaji/
 │   ├── statemachine/       # Pure state transitions
 │   ├── testutil/           # Shared testing helpers
 │   └── version/            # Version/build info
-├── .planning/              # Project planning and milestones (gitignored)
+├── .planning/              # Project planning and milestones (committed for documentation)
 ├── .changes/               # Changelog entries (managed by changie)
 ├── coverage/               # Test coverage output (gitignored)
 ├── research/               # Research and design notes
