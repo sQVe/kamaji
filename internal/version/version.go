@@ -1,13 +1,15 @@
 package version
 
+const unknown = "unknown"
+
 var (
 	Version = "dev"
-	Commit  = "unknown"
-	Date    = "unknown"
+	Commit  = unknown
+	Date    = unknown
 )
 
 func Full() string {
-	if Commit == "unknown" {
+	if Commit == unknown {
 		return Version
 	}
 
