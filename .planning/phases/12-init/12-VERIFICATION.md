@@ -43,7 +43,7 @@ score: 3/3 must-haves verified
     - File existence check using `os.Stat()` and `errors.Is(err, os.ErrNotExist)`
     - Error handling for write failures
     - Uses `output.PrintSuccess` and `output.PrintError` for user feedback
-    - Returns `errConfigInvalid` sentinel for graceful error handling
+    - Returns `errFileExists` or `errWriteFailed` sentinels for graceful error handling
     - 0600 file permissions (security best practice per gosec)
 
 **cmd/kamaji/main.go**
@@ -58,7 +58,7 @@ score: 3/3 must-haves verified
 | ------------------ | ------------------ | ----------------------------- | ------- | --------------------------------------------------------------- |
 | cmd/kamaji/init.go | internal/output    | PrintSuccess/PrintError calls | ✓ WIRED | Line 70: PrintError, Line 78: PrintError, Line 82: PrintSuccess |
 | cmd/kamaji/main.go | cmd/kamaji/init.go | AddCommand registration       | ✓ WIRED | Line 30: `cmd.AddCommand(initCmd())`                            |
-| init.go            | validate.go        | errConfigInvalid sentinel     | ✓ WIRED | Lines 71, 79 return errConfigInvalid defined in validate.go     |
+| init.go            | config.go          | sentinel errors               | ✓ WIRED | Lines 71, 79 return errFileExists/errWriteFailed from config.go |
 
 ### Requirements Coverage
 

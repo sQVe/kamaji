@@ -208,8 +208,8 @@ Problems that look simple but have existing solutions:
 
 **What goes wrong:** Files created with wrong permissions (too open or too restrictive)
 **Why it happens:** Not considering security implications of config files
-**How to avoid:** Use 0644 for kamaji.yaml (not sensitive, may need group read), 0600 for sensitive files
-**Warning signs:** Using default permissions or copying 0600 from examples meant for secrets
+**How to avoid:** Use 0600 for kamaji.yaml per gosec guidance, and 0600 for other sensitive files
+**Warning signs:** Using default permissions or overly permissive 0644 without justification
 
 ### Pitfall 4: Inconsistent Error Handling
 
