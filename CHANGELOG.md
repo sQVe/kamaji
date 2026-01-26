@@ -1,0 +1,18 @@
+## [v0.1.0](https://github.com/sQVe/kamaji/releases/tag/v0.1.0) - 2026-01-26
+
+### Added
+- Cobra CLI with testscript integration tests
+- Git operations for branch creation, commits, and reset
+- Init command for bootstrapping kamaji.yaml configuration files
+- Domain types, config persistence, and version package
+- Project tooling and CI/CD infrastructure
+- MCP server for agent task orchestration
+- MCP signal channel and Claude Code process spawning
+- Orchestrator runner with start command for executing sprints
+- Task outcome handler for pass/fail/stuck workflows
+- Prompt builder for agent session context injection
+- State machine for sprint task navigation
+- Streaming output styling with plain mode support
+- Ticket history recording with file locking and summary functions
+- Validate command for checking sprint configuration files
+
