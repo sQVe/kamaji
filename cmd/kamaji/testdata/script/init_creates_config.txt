@@ -1,0 +1,9 @@
+# Test: init creates kamaji.yaml in empty directory
+! exists kamaji.yaml
+exec kamaji init
+stdout 'Created kamaji.yaml'
+! stderr .
+
+exists kamaji.yaml
+exec kamaji validate
+stdout 'Configuration is valid'

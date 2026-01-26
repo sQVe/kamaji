@@ -7,7 +7,13 @@ External Go CLI that orchestrates autonomous coding sprints by spawning fresh AI
 
 ## Why
 
-Running loops inside AI agents causes context pollution and exhaustion. Kamaji owns the state machine externally, giving each task a clean context window.
+**AI agents are unreliable planners.** When AI decides what tasks to execute, it misses things. Tests, edge cases, conventions. You only discover the gaps after the work is done.
+
+**Kamaji flips the model.** You define the tasks. The AI executes but doesn't decide scope. Nothing gets skipped unless you consciously omit it.
+
+**Opinionated by design.** Kamaji provides structure: research, implementation, testing, verification. You decide what applies per task. Good practices are built into the workflow, not left to the AI's judgment.
+
+**Context stays clean.** Running loops inside AI agents causes context pollution. Kamaji owns the state machine externally, spawning fresh sessions per task.
 
 ## Features
 

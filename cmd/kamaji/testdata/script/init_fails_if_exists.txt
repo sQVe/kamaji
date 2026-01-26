@@ -1,0 +1,18 @@
+# Test: init fails when kamaji.yaml already exists
+cp kamaji.yaml kamaji.yaml
+exists kamaji.yaml
+
+! exec kamaji init
+stderr 'kamaji.yaml already exists'
+! stdout .
+
+# Verify original file unchanged
+exec cat kamaji.yaml
+stdout 'original-sprint'
+
+-- kamaji.yaml --
+name: original-sprint
+tickets:
+  - name: ticket-1
+    tasks:
+      - description: Task 1

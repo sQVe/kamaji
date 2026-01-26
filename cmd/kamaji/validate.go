@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,10 +10,6 @@ import (
 	"github.com/sqve/kamaji/internal/config"
 	"github.com/sqve/kamaji/internal/output"
 )
-
-// errConfigInvalid signals that the configuration is invalid.
-// The error details have already been printed via output package.
-var errConfigInvalid = errors.New("config invalid")
 
 func validateCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -26,7 +21,7 @@ func validateCmd() *cobra.Command {
 				return err
 			}
 
-			sprintPath := filepath.Join(workDir, "kamaji.yaml")
+			sprintPath := filepath.Join(workDir, configFile)
 
 			sprint, err := config.LoadSprint(sprintPath)
 			if err != nil {

@@ -12,7 +12,7 @@ import (
 
 func main() {
 	if err := rootCmd().Execute(); err != nil {
-		if !errors.Is(err, errSprintFailed) && !errors.Is(err, errConfigInvalid) {
+		if !isSilentError(err) {
 			fmt.Fprintln(os.Stderr, err)
 		}
 		os.Exit(1)
@@ -27,8 +27,16 @@ func rootCmd() *cobra.Command {
 		SilenceErrors: true,
 	}
 
+	cmd.AddCommand(initCmd())
 	cmd.AddCommand(startCmd())
 	cmd.AddCommand(validateCmd())
 
 	return cmd
+}
+
+func isSilentError(err error) bool {
+	return errors.Is(err, errSprintFailed) ||
+		errors.Is(err, errConfigInvalid) ||
+		errors.Is(err, errFileExists) ||
+		errors.Is(err, errWriteFailed)
 }
