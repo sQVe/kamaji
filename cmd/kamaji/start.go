@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 
@@ -9,10 +8,6 @@ import (
 
 	"github.com/sqve/kamaji/internal/orchestrator"
 )
-
-// errSprintFailed signals that the sprint did not complete successfully.
-// The error message has already been printed via output package.
-var errSprintFailed = errors.New("sprint failed")
 
 func startCmd() *cobra.Command {
 	var spawnerCmd string
@@ -29,7 +24,7 @@ func startCmd() *cobra.Command {
 
 			result, err := orchestrator.Run(cmd.Context(), orchestrator.RunConfig{
 				WorkDir:    workDir,
-				SprintPath: filepath.Join(workDir, "kamaji.yaml"),
+				SprintPath: filepath.Join(workDir, configFile),
 				SpawnerCmd: spawnerCmd,
 			})
 			if err != nil {

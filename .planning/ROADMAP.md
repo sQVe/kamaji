@@ -19,7 +19,7 @@
 **Milestone Goal:** Add commands to help users create and refine sprint configs before execution.
 
 - [x] **Phase 11: Validation** - Schema and semantic validation for kamaji.yaml
-- [ ] **Phase 12: Init** - Create template config with explanatory comments
+- [x] **Phase 12: Init** - Create template config with explanatory comments
 - [ ] **Phase 13: Refine** - AI-assisted config improvement via Claude Code
 - [ ] **Phase 14: Integration** - Wire validation into start command
 
@@ -47,11 +47,12 @@ Plans:
 1. User can run `kamaji init` in any directory and get kamaji.yaml created
 2. Generated file contains valid YAML with comments explaining each section
 3. Running `kamaji init` when kamaji.yaml exists shows error and does not overwrite
-   **Plans**: TBD
+
+**Plans:** 1 plan
 
 Plans:
 
-- [ ] 12-01: TBD
+- [x] 12-01-PLAN.md - Init command with YAML template generation
 
 ### Phase 13: Refine
 
@@ -96,11 +97,11 @@ Plans:
 | --------------- | --------- | -------------- | ----------- | ---------- |
 | 1-10            | v1.0      | 23/23          | Complete    | 2026-01-23 |
 | 11. Validation  | v1.1      | 2/2            | Complete    | 2026-01-23 |
-| 12. Init        | v1.1      | 0/1            | Not started | -          |
+| 12. Init        | v1.1      | 1/1            | Complete    | 2026-01-26 |
 | 13. Refine      | v1.1      | 0/3            | Not started | -          |
 | 14. Integration | v1.1      | 0/1            | Not started | -          |
 
 ---
 
 _Roadmap created: 2026-01-23_
-_Last updated: 2026-01-23 after Phase 11 completion_
+_Last updated: 2026-01-26 after Phase 12 complete_

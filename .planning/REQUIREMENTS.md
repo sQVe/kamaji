@@ -9,9 +9,9 @@ Requirements for sprint planning feature. Each maps to roadmap phases.
 
 ### Init Command
 
-- [ ] **INIT-01**: User can run `kamaji init` to create template config in CWD
-- [ ] **INIT-02**: Template contains minimal scaffold with comments explaining each section
-- [ ] **INIT-03**: Init fails gracefully if kamaji.yaml already exists
+- [x] **INIT-01**: User can run `kamaji init` to create template config in CWD
+- [x] **INIT-02**: Template contains minimal scaffold with comments explaining each section
+- [x] **INIT-03**: Init fails gracefully if kamaji.yaml already exists
 
 ### Refine Command
 
@@ -63,9 +63,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase    | Status   |
 | ----------- | -------- | -------- |
-| INIT-01     | Phase 12 | Pending  |
-| INIT-02     | Phase 12 | Pending  |
-| INIT-03     | Phase 12 | Pending  |
+| INIT-01     | Phase 12 | Complete |
+| INIT-02     | Phase 12 | Complete |
+| INIT-03     | Phase 12 | Complete |
 | REFN-01     | Phase 13 | Pending  |
 | REFN-02     | Phase 13 | Pending  |
 | REFN-03     | Phase 13 | Pending  |
@@ -90,4 +90,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 ---
 
 _Requirements defined: 2026-01-23_
-_Last updated: 2026-01-23 after roadmap creation_
+_Last updated: 2026-01-26 after Phase 12 complete_
